@@ -1,4 +1,5 @@
 var roll = require("./roll.js").roll;
+var printEmoji = require("./printValues.js").print;
 const firebase = require('firebase');
 const config = require("../config.js").config;
 var r = 0;
@@ -143,7 +144,7 @@ function initiative(params, initiativeOrder, message, bot, channelEmoji) {
       console.log("Just printing initiativeOrder");
       break;
   }
-  printinitiativeOrder(initiativeOrder, message);
+  printinitiativeOrder(initiativeOrder, message, bot, channelEmoji);
   return initiativeOrder;
 }
 
@@ -179,30 +180,30 @@ function initializeinitOrder() {
 }
 
 //Prints out Initiative Order to channel
-function printinitiativeOrder(initiativeOrder, message) {
+function printinitiativeOrder(initiativeOrder, message, bot, channelEmoji) {
   let faces = "";
   for (var i = initiativeOrder.turn - 1; i < initiativeOrder.slots.length; i++) {
-    faces += getFace(initiativeOrder.slots[i].type);
+    faces += getFace(initiativeOrder.slots[i].type, bot, channelEmoji);
   }
   faces += ":repeat:";
   for (var i = 0; i < initiativeOrder.turn - 1; i++) {
-    faces += getFace(initiativeOrder.slots[i].type);
+    faces += getFace(initiativeOrder.slots[i].type, bot, channelEmoji);
   }
   message.channel.send("Round: " + initiativeOrder.round + " Turn: " + initiativeOrder.turn + "\nInitiative Order: ");
   if (faces == "") return;
   message.channel.send(faces);
 }
 
-function getFace(type){
+function getFace(type, bot, channelEmoji){
   switch(type){
     case "npc": // non-playable character
       return ":smiling_imp:";
     case "pc": // playable character
       return ":slight_smile:";
     case "dnpc": // dead non-playable character
-      return ":ghost:";
+    	  return printEmoji("dnpc", bot, channelEmoji);
     case "dpc": // dead playable character
-      return ":dizzy_face:";
+    	  return printEmoji("dpc", bot, channelEmoji);
     default:
       return ""; // Always return a string. Even an empty one.
   }
